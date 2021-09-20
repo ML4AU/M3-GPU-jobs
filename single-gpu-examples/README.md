@@ -12,7 +12,7 @@ In this section, we'll start with a GUI interface using a
 session to ensure the code is behaving as expected, 
 and then translate that into an sbatch job submission script. 
 This section assumes you have cloned this repository and the 
-Tensorflow models repositroy, and have set up a Python environment, per
+Tensorflow models repository, and have set up a Python environment, per
 the README file in the parent directory.
 
 # Starting with a desktop
@@ -160,7 +160,7 @@ I0917 12:01:36.087600 139914427299648 keras_utils.py:96] BenchmarkMetric: {'epoc
 So far, we've been interactively running commands in the desktop terminal. 
 Once you know everything works, you'll likely want to transition to a 
 job suibmission script. This will allow you to get access to higher powered GPUs,
-and allow you to reprocude your code with a single job submission, rather
+and allow you to reproduce your code with a single job submission, rather
 than remembering to run commands every time.
 
 You can inspect the sample jobs for these in 
@@ -250,4 +250,4 @@ sbatch resnet_job
 ```
 
 You can query your jobs with the `squeue` and `sacct` command, and find the 
-outputs of your jobs in `slurm-<jobID>.out` and `slurm<jobID>.err` files.
+outputs of your jobs in `slurm-<jobID>.out` and `slurm-<jobID>.err` files.
