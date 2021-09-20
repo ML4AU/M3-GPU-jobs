@@ -1,9 +1,9 @@
-# Running Multi GPU Jobs on the MASSIVE M3 cluster
+# Running GPU and Multi GPU Jobs on the MASSIVE M3 cluster
 
 As machine learning and deep learning models continue to grow in size,
 and training datasets scale accordingly, there's an increased need to take
 advantage of GPU technology to accelerate model training. Researchers 
-who need GPUs are turning to HPC facilities to get access to advanced GPU hardware. 
+are turning to HPC facilities to get access to advanced GPU hardware. 
 
 On MASSIVE, we provide interactive GPU access via our Strudel Desktop
 and JupyterLab interface. This allows researchers using machine learning 
@@ -13,7 +13,7 @@ access to multiple-GPUs, meaning as workloads scale, researchers need to
 request interactive jobs on the command line or use job submission to access these resources.
 
 The aim of this repository is to provide examples for requesting single GPUs,
-multiple GPUs, and GPUs across nodes on the command line, with example scripts.
+multiple GPUs on the command line, with example scripts.
 
 These instructions reply on the [Tensorflow models repository](https://github.com/tensorflow/models/tree/master/official) 
 which exemplifies best practice, and is based on excellent instructions provided 
@@ -24,8 +24,9 @@ There are some general tips, tricks, and things to look out for when running
 GPU jobs on M3 that I'll spotlight here. 
 
 * Ensure your code is GPU enabled - if it isn't, no amount of GPUs will accelerate your code!
-  You can check this by running a desktop job and running the `nvidia-smi` command to
+  You can check this while code is running by using a desktop job and running the `nvidia-smi` command to
   confirm the GPU is being used. 
+  [Tensorflow also provides methods to check this.](https://www.tensorflow.org/guide/gpu)
 * Additionally, if you run a GPU job on a login node or node without a GPU on it, your
   GPU enabled code won't benefit. It seems obvious, but if you're troubleshooting  
   unexpected job behaviour, it's worth double checking you have access to a GPU. 
@@ -36,7 +37,7 @@ GPU jobs on M3 that I'll spotlight here.
   [our GPU documentation](https://docs.massive.org.au/M3/GPU-docs/GPU-look-up-tables.html) 
   for more information on this. 
 
-With all of that said, let's consider how to run jobs.
+With all of that said, let's run jobs.
 
 # Set-Up
 ## Setting up your Python environment
@@ -89,4 +90,20 @@ git clone https://github.com/tensorflow/models.git
 cd $REPODIR/models
 git checkout v2.1.0
 
-``
+```
+
+## Download the CIFAR-10 data
+We will use the CIFAR-10 dataset in our examples. You'll want to download this. 
+
+```
+cd ${REPODIR}/M3-GPU-jobs/cifar10-data
+wget https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz
+tar xf $DATA_DIR/cifar-10-binary.tar.gz
+```
+
+# Running The Examples
+You will find instructions and sample job submission scripts in `single-gpu-examples` and `multi-gpu-examples`, with more detailed instructions and commentary. 
+
+# Future Work
+We intend to add multi-node examples to this repository. We're currently working on getting
+[Horovod](https://github.com/horovod/horovod) running on the MASSIVE M3 cluster for this purpose. 
