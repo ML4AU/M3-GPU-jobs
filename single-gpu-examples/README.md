@@ -135,9 +135,6 @@ you `PYTHONPATH`, there's no need to repeat the steps here.
 (tf2-gpu)[user@m3p001] export DATA_DIR=${REPODIR}/M3-GPU-jobs/cifar-data
 (tf2-gpu)[user@m3p001] export NUM_GPU=1
 
-# Extract the CIFAR-10 data into your DATA_DIR
-(tf2-gpu)[user@m3p001] tar xf $DATA_DIR/cifar-10-binary.tar.gz
-
 # In a separate terminal, run nvidia-smi to watch GPU utilisation if you want to 
 # monitor it.
 # Then, run the RESNET model on your CIFAR-10 data.
