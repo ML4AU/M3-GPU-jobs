@@ -37,9 +37,6 @@ export DATA_DIR=${REPODIR}/M3-GPU-jobs/cifar-data
 export MODEL_DIR=${REPODIR}/M3-GPU-jobs/single-gpu-examples/job-resnet
 export NUM_GPU=1
 
-# Extract the CIFAR-10 data into your DATA_DIR
-tar xf $DATA_DIR/cifar-10-binary.tar.gz
-
 # Run the included Resnet model 
 # Note the --distribution_strategy flag to determine how many GPUs are used
 # We're using a single GPU, so this will be one_device
