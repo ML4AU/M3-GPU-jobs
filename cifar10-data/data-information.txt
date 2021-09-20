@@ -1,0 +1,2 @@
+Learn more about CIFAR-10 here: 
+https://www.cs.toronto.edu/~kriz/cifar.html

@@ -1,0 +1,2 @@
+Learn more about data here:
+http://yann.lecun.com/exdb/mnist/
