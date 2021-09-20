@@ -98,7 +98,7 @@ We will use the CIFAR-10 dataset in our examples. You'll want to download this.
 ```
 cd ${REPODIR}/M3-GPU-jobs/cifar10-data
 wget https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz
-tar xf $DATA_DIR/cifar-10-binary.tar.gz
+tar xf cifar-10-binary.tar.gz
 ```
 
 # Running The Examples
