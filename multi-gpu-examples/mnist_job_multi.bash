@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=resnet_job
+#SBATCH --job-name=multi_gpu_mnist_job
 
 # Replace this with your email address
 # To get email updates when your job starts, ends, or fails
-#SBATCH --mail-user=<youremail@domain.org>
+#SBATCH --mail-user=youremail@domain.com
 #SBATCH --mail-type=BEGIN,END,FAIL
 
 # Replace <project> with your project ID
@@ -11,7 +11,7 @@
 
 #SBATCH --time=00:30:00
 #SBATCH --ntasks=6
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --partition=m3h
 #SBATCH --mem=55G
 
@@ -33,18 +33,18 @@ git checkout v2.1.0
 # Export variables as necessary
 # We're using one GPU
 export PYTHONPATH=${REPODIR}/models:$PYTHONPATH
-export DATA_DIR=${REPODIR}/M3-GPU-jobs/cifar10-data
-export MODEL_DIR=${REPODIR}/M3-GPU-jobs/single-gpu-examples/job-resnet
-export NUM_GPU=1
+export DATA_DIR=${REPODIR}/M3-GPU-jobs/mnist-data
+export MODEL_DIR=${REPODIR}/M3-GPU-jobs/multi-gpu-examples/multi-job-mnist
+export NUM_GPU=2
 
-# Run the included Resnet model 
+# Run the included MNIST model 
 # Note the --distribution_strategy flag to determine how many GPUs are used
-# We're using a single GPU, so this will be one_device
+# We're using multiple GPUs, so this will be mirrored
 
-python ${REPODIR}/models/official/vision/image_classification/resnet_cifar_main.py  \
-    --num_gpus=$NUM_GPU  \
-    --batch_size=128  \
+python ${REPODIR}/models/official/vision/image_classification/mnist_main.py \
     --model_dir=$MODEL_DIR \
-    --data_dir=$DATA_DIR/cifar-10-batches-bin \
-    --distribution_strategy=one_device \
+    --data_dir=$DATA_DIR \
+    --train_epochs=10 \
+    --distribution_strategy=mirrored \
+    --num_gpus=$NUM_GPU \
 EOF

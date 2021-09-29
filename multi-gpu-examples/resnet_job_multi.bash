@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=resnet_job
+#SBATCH --job-name=multi_gpu_resnet_job
 
 # Replace this with your email address
 # To get email updates when your job starts, ends, or fails
@@ -11,7 +11,7 @@
 
 #SBATCH --time=00:30:00
 #SBATCH --ntasks=6
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --partition=m3h
 #SBATCH --mem=55G
 
@@ -34,17 +34,17 @@ git checkout v2.1.0
 # We're using one GPU
 export PYTHONPATH=${REPODIR}/models:$PYTHONPATH
 export DATA_DIR=${REPODIR}/M3-GPU-jobs/cifar10-data
-export MODEL_DIR=${REPODIR}/M3-GPU-jobs/single-gpu-examples/job-resnet
-export NUM_GPU=1
+export MODEL_DIR=${REPODIR}/M3-GPU-jobs/multi-gpu-examples/multi-job-resnet
+export NUM_GPU=2
 
 # Run the included Resnet model 
 # Note the --distribution_strategy flag to determine how many GPUs are used
-# We're using a single GPU, so this will be one_device
+# We're using a multiple GPUs, so this will be mirrored
 
 python ${REPODIR}/models/official/vision/image_classification/resnet_cifar_main.py  \
     --num_gpus=$NUM_GPU  \
     --batch_size=128  \
     --model_dir=$MODEL_DIR \
     --data_dir=$DATA_DIR/cifar-10-batches-bin \
-    --distribution_strategy=one_device \
+    --distribution_strategy=mirrored \
 EOF
