@@ -92,4 +92,4 @@ adjusted to run on 2 P100 GPUs. The main changes in both jobs can be summarised 
   the `mirrored` setting "supports synchronous distributed training on multiple GPUs on one machine."
 
 # Comparing our GPU runs
-
+![GPU performance comparisons](GPU_exp_per_sec.png)
