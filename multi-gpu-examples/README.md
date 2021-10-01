@@ -92,4 +92,32 @@ adjusted to run on 2 P100 GPUs. The main changes in both jobs can be summarised 
   the `mirrored` setting "supports synchronous distributed training on multiple GPUs on one machine."
 
 # Comparing our GPU runs
+Sometimes adding GPUs doesn't improve your job performance - there is a communication overhead
+when introducing additional GPUs that has the potential to mitigate any performance improvements. 
+The ResNet example we have used uses a small dataset, CIFAR-10, and we have looked at the 
+examples processed per second on different GPUs and numbers of GPUs. Note, there are only 2 P100s 
+on a single node, so we haven't included data for 3 P100 GPUs.
+
+![GPU performance comparisons](GPU_exp_per_sec.png)
+
+This graph demonstrates a few things - a V100 is the most efficient for this particular job,
+which is expected per our [machine learning benchmarks](https://www.ml4au.community/tools/benchmarking-gpus).
+More interestingly however, it demonstrates that 2 K80s perform slightly better than a single K80, 
+but adding a third K80 starts to degrade performance. The more
+powerful P100 and V100 GPUs don't benefit from any additional GPUs, reaching performance capacity with a 
+single GPU on the small dataset. The number of GPUs for the best job performance will depend on the 
+type of GPU you're using. 
+
+It's important to perform similar tests when running your deep learning code to understand
+if your performance genuinely improves with more GPUs - there's no point waiting in the queue 
+for multiple GPUs if you only need one! The examples ran here also demonstrate best practice, 
+and have high GPU utilisation, which can impact the efficiency of your job considerably.
+
+This sort of benchmarking is helpful help when applying for access to our specialised 
+[DGX GPUs](https://docs.massive.org.au/communities/dgx.html), 
+which have 8 GPUs on a single node. 
+If we see your performance continues to improve with 3 V100 GPUs, then granting access
+to the DGX partition is straightforward. 
+If your model reaches peak performance on 2 K80s, it's less likely 
+you will benefit from access to the specialised DGX resource and we can advise accordingly. 
 
