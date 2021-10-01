@@ -110,11 +110,14 @@ type of GPU you're using.
 
 It's important to perform similar tests when running your deep learning code to understand
 if your performance genuinely improves with more GPUs - there's no point waiting in the queue 
-for multiple GPUs if you only need one!
+for multiple GPUs if you only need one! The examples ran here also demonstrate best practice, 
+and have high GPU utilisation, which can impact the efficiency of your job considerably.
 
-This sort of benchmarking can also help when applying for access to our specialised DGX GPUs, which have 8 GPUs 
-on a single node. If we see your performance continues to improve with 3 V100 GPUs, then granting access
-to the DGX partition is straightforwad. 
+This sort of benchmarking is helpful help when applying for access to our specialised 
+[DGX GPUs](https://docs.massive.org.au/communities/dgx.html), 
+which have 8 GPUs on a single node. 
+If we see your performance continues to improve with 3 V100 GPUs, then granting access
+to the DGX partition is straightforward. 
 If your model reaches peak performance on 2 K80s, it's less likely 
 you will benefit from access to the specialised DGX resource and we can advise accordingly. 
 
