@@ -21,6 +21,10 @@ These instructions reply on the best practice models implemented in the
 These instructions are also based on the excellent instructions provided 
 in the [Biowulf documentation](https://hpc.nih.gov/docs/deeplearning/multinode_DL.html).
 
+If while looking at these materials you have any additional questions,
+don't hesitate to reach out to MASSIVE M3 helpdesk at
+help@massive.org.au.
+
 # General comments on GPU jobs on MASSIVE M3
 I'm going to spotlight some tips, tricks, general troubleshooting advice, 
 and things to note when running GPU jobs on M3 here. 
