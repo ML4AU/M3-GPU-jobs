@@ -1,10 +1,10 @@
 # Running single GPU jobs on MASSIVE M3
 
 Before running a multi-GPU job on the cluster, it's always beneficial to run
-a single GPU job first, so you can compare results - sometimes adding more
-GPUs can slow your code down. In particular, when using powerful GPUs
-like NVIDIA Tesla V100s on small training sets, added GPUs are unlikely
-to offer any benefits, or even introduce additional time with 
+a single GPU job first. This allows you to check your code is GPU enabled
+before waiting in the queue for multiple GPUs, and will allow you to
+determine whether more GPUs accelerates your code. Sometimes, additional 
+GPUs can actually reduce your code performance, introducing additional time with 
 communication overhead between the GPUs.
 
 In this section, we'll start with a GUI interface using a
@@ -12,13 +12,15 @@ In this section, we'll start with a GUI interface using a
 session to ensure the code is behaving as expected, 
 and then translate that into an sbatch job submission script. 
 This section assumes you have cloned this repository and the 
-Tensorflow models repository, and have set up a Python environment, per
-the README file in the parent directory.
+TensorFlow models repository, and have set up a Python environment, per
+the README file in the parent directory. This code also assumes
+you have used the cluster before, but may be unfamiliar with 
+GPU job submissions.
 
 # Starting with a desktop
-## Start a desktop session
-To get started, we'll want to get a desktop session with a GPU attached.
-You can find more information including images on how to complete these steps in our 
+## Request a desktop session
+To get started, we'll need access to a desktop session with a GPU.
+You can find more detailed instructions on how to complete these steps in our 
 [documentation here](https://docs.massive.org.au/M3/connecting/strudel2/connecting-to-desktop.html?highlight=strudel2),
 but the interface should be straightforward without them. A desktop is the easiest and 
 fastest way to get access to a GPU for interactive testing.
@@ -37,7 +39,7 @@ fastest way to get access to a GPU for interactive testing.
    Once it appears, select `Connect`. Your desktop will open in a new tab, assuming
    that you don't have pop ups blocked. 
 6. Open a terminal in the desktop - here is where we'll test our commands. You will want 
-   to have a second terminal open to, so we can use the `nvidia-smi` command to verify
+   to have a second terminal open too, so we can use the `nvidia-smi` command to verify
    our GPU is utilised later. 
 
 ## Let's run a model! 
@@ -49,11 +51,19 @@ and are based on instructions in the
 # Replace <project> with your project ID, i.e. ab12
 [user@m3p001 ~] export REPODIR=/scratch/<projects>/$USER/gpu-examples/
 
-# Activate your conda environment
+# module load CUDA and cudNN for GPU access
+module load cuda/10.1
+module load cudnn/7.6.5.32-cuda10
+
+# Activate your conda environment, edit the path as required
 [user@m3p001 ~] source /path/to/miniconda/bin/activate
 (base)[user@m3p001 ~] conda activate tf2-gpu
 
-# Add the Tensorflow models to our Python path
+# Ensure you're using the TF 2.1.0 version of the models repository
+cd $REPODIR/models
+git checkout v2.1.0
+
+# Add the TensorFlow models to our Python path
 (tf2-gpu)[user@m3p001] export PYTHONPATH=${REPODIR}/models:$PYTHONPATH
 
 # Set your variables for your model and data directories
@@ -112,21 +122,29 @@ Run stats:
 If you watch the terminal with `watch nvidia-smi` running, you can see your
 GPU utilisation increase. 
 
-Now we can try to run something a bit more intensive, the RESNET model 
+Now we can try to run something a bit more intensive, the ResNet model 
 on some CIFAR-10 data. Some of these steps are repeats of steps ran above,
 so if you have already activated your conda environment and exported
-you `PYTHONPATH`, there's no need to repeat the steps here. 
+your `PYTHONPATH`, there's no need to repeat the steps here. 
 
 
 ```
 # Replace <project> with your project ID, i.e. ab12
 [user@m3p001 ~] export REPODIR=/scratch/<projects>/$USER/gpu-examples/
 
+# module load CUDA and cudNN for GPU access
+module load cuda/10.1
+module load cudnn/7.6.5.32-cuda10
+
 # Activate your conda environment
 [user@m3p001 ~] source /path/to/miniconda/bin/activate
 (base)[user@m3p001 ~] conda activate tf2-gpu
 
-# Add the Tensorflow models to our Python path
+# Ensure you're using the TF 2.1.0 version of the models repository
+cd $REPODIR/models
+git checkout v2.1.0
+
+# Add the TensorFlow models to our Python path
 (tf2-gpu)[user@m3p001] export PYTHONPATH=${REPODIR}/models:$PYTHONPATH
 
 # Set your variables for your model and data directories
@@ -137,7 +155,8 @@ you `PYTHONPATH`, there's no need to repeat the steps here.
 
 # In a separate terminal, run nvidia-smi to watch GPU utilisation if you want to 
 # monitor it.
-# Then, run the RESNET model on your CIFAR-10 data.
+
+# Then, run the ResNet model on your CIFAR-10 data.
 # Note, --distribution_strategy=one_device as we're using one GPU
 (tf2-gpu)[user@m3p001] python ${REPODIR}/models/official/vision/image_classification/resnet_cifar_main.py  \
     --num_gpus=$NUM_GPU  \  
@@ -159,7 +178,7 @@ I0917 12:01:36.087600 139914427299648 keras_utils.py:96] BenchmarkMetric: {'epoc
 # Submitting a single-GPU job to the cluster
 So far, we've been interactively running commands in the desktop terminal. 
 Once you know everything works, you'll likely want to transition to a 
-job suibmission script. This will allow you to get access to higher powered GPUs,
+job submission script. This will allow you to get access to more advanced GPUs,
 and allow you to reproduce your code with a single job submission, rather
 than remembering to run commands every time.
 
@@ -209,7 +228,7 @@ export DATA_DIR=${REPODIR}/M3-GPU-jobs/mnist-data
 export MODEL_DIR=${REPODIR}/M3-GPU-jobs/single-gpu-examples/job-mnist
 export NUM_GPU=1
 
-# Run the included MNIST model
+# Run the included MNIST model 
 # Note the --distribution_strategy flag to determine how many GPUs are used
 # We're using a single GPU, so this will be one_device
 
@@ -223,16 +242,17 @@ EOF
 ```
 
 You will note the commands we ran on the command line are replicated
-here, with some commands at the top which communicate the resources we need to 
-the SLURM scheduler with `#SBATCH`. We start the script off with the shebang, 
+here, with some additional commands at the top. The `#SBATCH` lines 
+aren't comments, but are directives to SLURM requesting resources.
+We start the script off with the shebang `#!/bin/bash`, 
 indicating the script is written in bash. Then we specify some optional
-parameters, like our job name, and an email address to recieve updates on our job status.
+parameters, like our job name, and an email address to receive updates on our job status.
 GPU jobs often wait a while in the queue, so getting an email notification when they start
 and end can be helpful.
 
 The other included parameters are more important - your HPC project, and the amount of time required 
-(which is 30 minutes here). The `ntasks` specifies number of CPUs, and the `mem` specifies the 
-RAM or memory - both of these values are based on the default P4 job, which we 
+(which is 30 minutes here). The `ntasks` option specifies number of CPUs, and the `mem` specifies the 
+RAM or memory - both of these values have been selected based on the default P4 job, which we 
 already ran successfully. Importantly, `gres=gpu:1` specifies we want one GPU, and we also 
 request the m3h partition - this ensures we request a job on the partition with P100
 GPUs. If we request a partition without a GPU our job will fail due to invalid combination

@@ -19,7 +19,7 @@ may reach maximum efficiency on only a single V100 GPU, which is more
 powerful and well-suited for machine learning. It's always worth benchmarking how
 your code scales as you add GPUs.
 
-The P4 GPUs aren't availble outside of desktops, but you can access our P100 and V100 GPUs -  
+The P4 GPUs aren't availble outside of desktops, but you can access our P100 and V100 GPUs - 
 you may remember in our single GPU jobs we submitted to the P100 nodes.
 In general, V100s are more powerful than P100s, and you can only access 2 P100s on one node,
 versus 3 V100s on a single node. In these examples we'll stay on the P100  
@@ -41,7 +41,7 @@ node with them, similarly to how a desktop gives you access to a compute node.
 While we won't explain `smux` in depth here, the commands are very similar to 
 the ones in a job script.
 
-If we consider the commands from our single GPU MNIST job:
+Consider the commands from our single GPU MNIST job:
 
 ```
 export REPODIR=/scratch/<project>/$USER/gpu-examples
@@ -72,7 +72,7 @@ smux new-session --time=00:30:00 --ntasks=6 --gres=gpu:1 --partition=m3h --mem=5
 ```
 You can see we've just mirrored the key settings from our job into the `smux` command. You can
 inspect your job status with `squeue`, `sacct`, and `show_job` as usual, and connect
-to your running `smux` session with the `smux attach-session` command. Once you have attached,
+to your running `smux` session with the `smux attach-session` command. Once attached,
 you'll have access to a compute node with a GPU to run on. For multiple GPUs, you would alter
 the `gres` command to request more GPUs or a different partition. For 3 V100s for example,
 `--gres=gpu:3 --partition=m3g` would work. In general, due to the wait time for interactive sessions, 
@@ -81,22 +81,25 @@ it's best to submit jobs where possible instead.
 ## Submitting multi-GPU jobs
 If you inspect the files `mnist_job_multi.bash` and `resnet_job_multi.bash` in this directory, 
 you'll notice they look very similar to scripts submitted for single GPU jobs. Both scripts have been
-adjusted to run on 2 P100 GPUs. The main changes in both jobs can be summarised with:
+adjusted to run on 2 P100 GPUs. The main changes in both jobs are:
 
 - The `--job-name` has been changed
 - To request 2 GPUs, we now have `--gres=gpu:2`
 - The MODEL_DIR directory has changed
-- To request 2 GPUs, `NUM_GPU=2` 
+- To request 2 GPUs, we set `NUM_GPU=2` 
 - In the line where we run our Python script, we have set `--distribution_strategy=mirrored`. As 
   explained in the [TensorFlow documentation](https://www.tensorflow.org/guide/distributed_training),
   the `mirrored` setting "supports synchronous distributed training on multiple GPUs on one machine."
 
+You can submit these jobs with `sbatch mnist_job_multi.bash` and `sbatch resnet_job_multi.bash`.
+
 # Comparing our GPU runs
 Sometimes adding GPUs doesn't improve your job performance - there is a communication overhead
 when introducing additional GPUs that has the potential to mitigate any performance improvements. 
-The ResNet example we have used uses a small dataset, CIFAR-10, and we have looked at the 
-examples processed per second on different GPUs and numbers of GPUs. Note, there are only 2 P100s 
-on a single node, so we haven't included data for 3 P100 GPUs.
+The ResNet example provided uses a small dataset, CIFAR-10, and is unlikely to benefit from additional
+GPUs. This graph compares the examples processed per second on different GPUs 
+and numbers of GPUs. Note, there are only 2 P100s 
+on a single node in M3, so we haven't included data for 3 P100 GPUs.
 
 ![GPU performance comparisons](GPU_exp_per_sec.png)
 
@@ -106,18 +109,17 @@ More interestingly however, it demonstrates that 2 K80s perform slightly better 
 but adding a third K80 starts to degrade performance. The more
 powerful P100 and V100 GPUs don't benefit from any additional GPUs, reaching performance capacity with a 
 single GPU on the small dataset. The number of GPUs for the best job performance will depend on the 
-type of GPU you're using. 
+type of GPU you're using.
 
 It's important to perform similar tests when running your deep learning code to understand
 if your performance genuinely improves with more GPUs - there's no point waiting in the queue 
 for multiple GPUs if you only need one! The examples ran here also demonstrate best practice, 
 and have high GPU utilisation, which can impact the efficiency of your job considerably.
 
-This sort of benchmarking is helpful help when applying for access to our specialised 
+This sort of benchmarking is helpful when applying for access to our specialised 
 [DGX GPUs](https://docs.massive.org.au/communities/dgx.html), 
 which have 8 GPUs on a single node. 
 If we see your performance continues to improve with 3 V100 GPUs, then granting access
 to the DGX partition is straightforward. 
 If your model reaches peak performance on 2 K80s, it's less likely 
 you will benefit from access to the specialised DGX resource and we can advise accordingly. 
-
